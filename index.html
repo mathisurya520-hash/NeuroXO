@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NeuroXO // Neural Tic-Tac-Toe</title>
+  <meta name="description" content="A premium futuristic Tic-Tac-Toe web application powered by neural aesthetics, custom audio synthesis, and minimax AI.">
+  
+  <!-- Preconnect to Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Orbitron for Headings, Rajdhani for futuristic status/numbers -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Main Stylesheet with Cache Buster -->
+  <link rel="stylesheet" href="styles.css?v=2">
+</head>
+<body>
+  <!-- Custom Interactive Cursor Glow -->
+  <div class="cursor-glow" id="cursorGlow"></div>
+
+  <!-- Background Particle Canvas -->
+  <canvas id="bgCanvas" class="bg-canvas"></canvas>
+
+  <!-- Startup Screen Boot Loader -->
+  <div class="loader-overlay" id="loaderOverlay">
+    <div class="loader-content">
+      <div class="loader-logo">
+        <span class="logo-accent">NEURO</span>XO
+      </div>
+      <div class="loader-bar-container">
+        <div class="loader-bar" id="loaderBar"></div>
+      </div>
+      <div class="loader-status" id="loaderStatus">CALIBRATING NEURAL SYNAPSE...</div>
+      <div class="loader-percent" id="loaderPercent">0%</div>
+    </div>
+  </div>
+
+  <!-- Main Game Dashboard -->
+  <div class="dashboard-wrapper">
+    <!-- Top Nav / Theme & Audio Controls -->
+    <header class="app-header">
+      <div class="logo">
+        <h1><span class="text-neon-blue">NEURO</span><span class="text-neon-purple">XO</span></h1>
+        <div class="tagline">NEURAL NETWORK MATRIX</div>
+      </div>
+      <div class="controls-panel">
+        <!-- Audio Synth Toggle -->
+        <button class="icon-btn sound-toggle" id="soundToggle" aria-label="Toggle Sound Effects">
+          <svg class="icon" viewBox="0 0 24 24" width="20" height="20">
+            <path id="soundIconPath" d="M12 3v18c-4.97 0-9-4.03-9-9s4.03-9 9-9zm4.5 9c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+          </svg>
+        </button>
+        <!-- Speech Announcer Toggle -->
+        <button class="icon-btn voice-toggle" id="voiceToggle" aria-label="Toggle Voice Synthesizer">
+          <svg class="icon" viewBox="0 0 24 24" width="20" height="20">
+            <path id="voiceIconPath" d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.49 6-3.31 6-6.72h-1.7z"/>
+          </svg>
+        </button>
+        <!-- Dark / Light Theme Toggle -->
+        <div class="theme-switch" id="themeToggle" role="button" tabindex="0" aria-label="Toggle Matrix Theme">
+          <div class="theme-switch-thumb"></div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Container Grid -->
+    <main class="dashboard-grid">
+      
+      <!-- LEFT SECTION: Match Setup & Scoreboard -->
+      <section class="grid-section section-left">
+        <!-- Game Mode Selection Panel -->
+        <div class="dashboard-card glass-panel" id="modeCard">
+          <div class="card-header">
+            <h2>MODE SELECT</h2>
+            <div class="card-glow-line purple"></div>
+          </div>
+          <div class="card-body">
+            <div class="mode-options">
+              <button class="mode-btn active" id="modePvAI" data-mode="ai">
+                <span class="btn-glow-bg"></span>
+                <span class="btn-text">COGNITIVE AI</span>
+                <span class="btn-subtext">VS NEURAL NET</span>
+              </button>
+              <button class="mode-btn" id="modePvP" data-mode="pvp">
+                <span class="btn-glow-bg"></span>
+                <span class="btn-text">LOCAL HOST</span>
+                <span class="btn-subtext">PLAYER VS PLAYER</span>
+              </button>
+            </div>
+            
+            <!-- AI Difficulty Level Selector -->
+            <div class="difficulty-container" id="difficultyContainer">
+              <label for="difficultySelect">AI INTELLIGENCE LEVEL</label>
+              <div class="diff-options">
+                <button class="diff-btn" data-diff="easy">
+                  <span>EASY</span>
+                  <div class="indicator"></div>
+                </button>
+                <button class="diff-btn active" data-diff="medium">
+                  <span>MEDIUM</span>
+                  <div class="indicator"></div>
+                </button>
+                <button class="diff-btn" data-diff="hard">
+                  <span>HARD CORE</span>
+                  <div class="indicator"></div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Real-Time Scoreboard -->
+        <div class="dashboard-card glass-panel" id="scoreboardCard">
+          <div class="card-header">
+            <h2>MATRIX METRICS</h2>
+            <div class="card-glow-line blue"></div>
+          </div>
+          <div class="card-body">
+            <div class="scoreboard-grid">
+              <div class="score-card player-x active" id="scoreCardX">
+                <div class="score-tag">USER (X)</div>
+                <div class="score-value" id="scoreX">0</div>
+                <div class="turn-indicator">ACTIVE</div>
+              </div>
+              
+              <div class="score-card draw" id="scoreCardDraw">
+                <div class="score-tag">TIE MATRIX</div>
+                <div class="score-value" id="scoreDraw">0</div>
+                <div class="turn-indicator">STALEMATE</div>
+              </div>
+
+              <div class="score-card player-o" id="scoreCardO">
+                <div class="score-tag" id="playerOTag">AI (O)</div>
+                <div class="score-value" id="scoreO">0</div>
+                <div class="turn-indicator">ACTIVE</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CENTER SECTION: Dynamic Game Board -->
+      <section class="grid-section section-center">
+        <div class="board-container glass-panel">
+          <!-- Game Board Overlay Status (Thinking, Start, Winner) -->
+          <div class="board-overlay" id="boardOverlay">
+            <div class="overlay-content">
+              <div class="ai-pulse" id="aiPulseIndicator" style="display: none;">
+                <div class="pulse-ring"></div>
+                <div class="pulse-ring"></div>
+                <div class="pulse-text">AI PROCESSOR ACTIVE...</div>
+              </div>
+              <div class="winner-announcement" id="winnerAnnounce" style="display: none;">
+                <h3 id="winnerText">X DOMINATES MATRIX</h3>
+                <button class="reboot-btn" id="overlayResetBtn">
+                  <span>RE-ENGAGE MATRIX</span>
+                  <div class="reboot-glow"></div>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- The Game Board Grid -->
+          <div class="game-board" id="gameBoard" role="grid" aria-label="Tic-Tac-Toe Board">
+            <!-- Dynamic cells added by JS -->
+            <button class="cell" data-index="0" role="gridcell" aria-label="Cell 1, Empty"></button>
+            <button class="cell" data-index="1" role="gridcell" aria-label="Cell 2, Empty"></button>
+            <button class="cell" data-index="2" role="gridcell" aria-label="Cell 3, Empty"></button>
+            <button class="cell" data-index="3" role="gridcell" aria-label="Cell 4, Empty"></button>
+            <button class="cell" data-index="4" role="gridcell" aria-label="Cell 5, Empty"></button>
+            <button class="cell" data-index="5" role="gridcell" aria-label="Cell 6, Empty"></button>
+            <button class="cell" data-index="6" role="gridcell" aria-label="Cell 7, Empty"></button>
+            <button class="cell" data-index="7" role="gridcell" aria-label="Cell 8, Empty"></button>
+            <button class="cell" data-index="8" role="gridcell" aria-label="Cell 9, Empty"></button>
+
+            <!-- Winning Line SVG overlay -->
+            <svg class="winning-line-svg" id="winningLineSvg" viewBox="0 0 100 100" pointer-events="none">
+              <line id="winningLine" x1="0" y1="0" x2="0" y2="0" stroke="url(#neonGlowGradient)" stroke-width="3" stroke-linecap="round" />
+              <defs>
+                <linearGradient id="neonGlowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="var(--neon-blue)" />
+                  <stop offset="50%" stop-color="var(--neon-purple)" />
+                  <stop offset="100%" stop-color="var(--neon-blue)" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+        </div>
+
+        <div class="board-action-footer">
+          <button class="primary-btn pulse-action" id="resetBtn">
+            <span class="btn-inner">NEURAL REBOOT</span>
+            <div class="btn-laser"></div>
+          </button>
+        </div>
+      </section>
+
+      <!-- RIGHT SECTION: Statistics & Logs -->
+      <section class="grid-section section-right">
+        <!-- Statistics Panel -->
+        <div class="dashboard-card glass-panel" id="statsCard">
+          <div class="card-header">
+            <h2>STATISTICAL INDEX</h2>
+            <div class="card-glow-line blue"></div>
+          </div>
+          <div class="card-body">
+            <div class="stats-grid">
+              <div class="stat-item">
+                <span class="stat-label">TOTAL CYCLES</span>
+                <span class="stat-number" id="statsTotal">0</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">WIN RATE %</span>
+                <span class="stat-number" id="statsWinRate">0%</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">MAX STREAK</span>
+                <span class="stat-number" id="statsStreak">0</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">COMPLETIONS</span>
+                <span class="stat-number" id="statsCompletions">0</span>
+              </div>
+            </div>
+            <!-- Progress Bar Tracker -->
+            <div class="stat-distribution-container">
+              <div class="dist-header">
+                <span>WIN RATIO DISTRIBUTION</span>
+              </div>
+              <div class="dist-bar-wrapper">
+                <div class="dist-bar x-bar" id="distBarX" style="width: 33%"></div>
+                <div class="dist-bar draw-bar" id="distBarDraw" style="width: 34%"></div>
+                <div class="dist-bar o-bar" id="distBarO" style="width: 33%"></div>
+              </div>
+              <div class="dist-labels">
+                <span class="text-neon-blue">X: <span id="distValX">0</span></span>
+                <span>TIE: <span id="distValDraw">0</span></span>
+                <span class="text-neon-purple">O: <span id="distValO">0</span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Match History Panel -->
+        <div class="dashboard-card glass-panel" id="historyCard">
+          <div class="card-header flex-header">
+            <h2>SYNAPSE MATRIX LOGS</h2>
+            <button class="clear-logs-btn" id="clearLogsBtn" aria-label="Clear Match Logs">PURGE</button>
+            <div class="card-glow-line purple"></div>
+          </div>
+          <div class="card-body scrollable-body">
+            <ul class="history-list" id="historyList" aria-live="polite">
+              <!-- Log entries appended here -->
+              <li class="history-empty">NO CYCLE RECORDED</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <div>NEUROXO VER. 2.0.4.6 // DEEP LEARNING MATRIX // INTERFACE IN SYNCHRONICITY</div>
+    </footer>
+  </div>
+
+  <!-- Sparkle Particle Canvas (for confetti explosion) -->
+  <canvas id="sparkleCanvas" class="sparkle-canvas"></svg>
+
+  <!-- Audio elements fallback (not needed, all synthesised, but keeps script flexible) -->
+  <script src="script.js"></script>
+</body>
+</html>
